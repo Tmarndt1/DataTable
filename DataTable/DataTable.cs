@@ -27,6 +27,8 @@ namespace DataTable
         
         public void Add(TCell cell)
         {
+            if (cell == null) throw new ArgumentNullException(nameof(cell));
+
             AddToColumn(cell);
             AddToRow(cell);           
         }
@@ -51,6 +53,8 @@ namespace DataTable
 
         public void AddOrUpdate(TCell cell)
         {
+            if (cell == null) throw new ArgumentNullException(nameof(cell));
+
             CellCollection<TCell> column = _columns.FirstOrDefault(x => x.Index == cell.ColIndex);
 
             if (column == null)
