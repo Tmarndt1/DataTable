@@ -31,9 +31,11 @@ namespace DataTable
 
         private readonly List<TCell> _cells = new List<TCell>();
 
-        public IList<TCell> Cells => _cells;
+        public IEnumerable<TCell> Cells => _cells;
 
         public int Count => _cells.Count;
+
+        public TCell this[int index] => _cells[index];
 
         private readonly Comparison<TCell> _comparer;
 
@@ -48,8 +50,6 @@ namespace DataTable
 
             _cells.Sort(_comparer);
         }
-
-        public int FindIndex(Predicate<TCell> match) => _cells.FindIndex(match);
 
         public IEnumerator<TCell> GetEnumerator()
         {

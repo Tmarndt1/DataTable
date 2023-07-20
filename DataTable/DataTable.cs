@@ -29,8 +29,8 @@ namespace DataTable
         {
             if (cell == null) throw new ArgumentNullException(nameof(cell));
 
-            AddToColumn(cell);
-            AddToRow(cell);           
+            AddToCollection(_columns, cell, x => x.ColIndex);
+            AddToCollection(_rows, cell, x => x.RowIndex);
         }
 
         public TCell FirstOrDefault(Func<TCell, bool> predicate)
@@ -39,7 +39,7 @@ namespace DataTable
             {
                 for (int j = 0; j < _columns[i].Count; j++)
                 {
-                    TCell cell = _columns[i].Cells[j];
+                    TCell cell = _columns[i][j];
 
                     if (predicate.Invoke(cell))
                     {
@@ -94,49 +94,28 @@ namespace DataTable
             _rows.Clear();
         }
 
-        private void AddToColumn(TCell cell)
+        private void AddToCollection(List<CellCollection<TCell>> list, TCell cell, Func<TCell, int> indexSelector)
         {
-            CellCollection<TCell> column = Columns.FirstOrDefault(x => x.Index == cell.ColIndex);
+            int index = indexSelector.Invoke(cell);
 
-            if (column == null)
+            CellCollection<TCell> cells = list.FirstOrDefault(c => c.Index == index);
+
+            if (cells == null)
             {
-                column = new CellCollection<TCell>((a, b) => a.ColIndex < b.ColIndex ? -1 : 1)
+                cells = new CellCollection<TCell>((a, b) => indexSelector(a) - indexSelector(b))
                 {
-                    Index = cell.ColIndex
+                    Index = index
                 };
 
-                column.Add(cell);
+                cells.Add(cell);
 
-                _columns.Add(column);
+                list.Add(cells);
 
-                _columns.Sort((a, b) => a.Index < b.Index ? -1 : 1);
+                list.Sort((a, b) => a.Index - b.Index);
             }
             else
             {
-                column.Add(cell);
-            }
-        }
-
-        private void AddToRow(TCell cell)
-        {
-            CellCollection<TCell> row = Rows.FirstOrDefault(x => x.Index == cell.RowIndex);
-
-            if (row == null)
-            {
-                row = new CellCollection<TCell>((a, b) => a.RowIndex < b.RowIndex ? -1 : 1)
-                {   
-                    Index = cell.RowIndex
-                };
-
-                row.Add(cell);
-
-                _rows.Add(row);
-
-                _rows.Sort((a, b) => a.Index < b.Index ? -1 : 1);
-            }
-            else
-            {
-                row.Add(cell);
+                cells.Add(cell);
             }
         }
     }
