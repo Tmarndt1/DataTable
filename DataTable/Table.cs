@@ -64,6 +64,13 @@ namespace DataTable
             return true;
         }
 
+        public void Remove(TCell cell)
+        {
+            _columns.Remove(cell.RowIndex);
+
+            _rows.Remove(cell.ColumnIndex);
+        }
+
         public void Clear()
         {
             _columns.Clear(); 
