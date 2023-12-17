@@ -2,33 +2,48 @@
 
 namespace DataTable
 {
-    public class Row<TCell>
-        where TCell : ICell
+    public abstract class Row
     {
         public int Index { get; init; }
+    }
 
-        public SortedList<int, TCell> Cells { get; private set; } = new SortedList<int, TCell>();
+    public class Row<TCell> : Row
+        where TCell : Cell
+    {
+        internal SortedList<int, TCell> SortedCells { get; private set; } = new SortedList<int, TCell>();
+
+        public IEnumerable<TCell> Cells => SortedCells.Values;
 
         public TCell this[int index]
         {
-            get => Cells[index];
+            get => SortedCells[index];
         }
 
         public Row() { }
 
         internal Row(TCell cell)
         {
-            Cells.Add(cell.ColumnIndex, cell);
+            Index = cell.RowIndex;
+
+            SortedCells.Add(cell.ColumnIndex, cell);
+
+            cell.Row = this;
         }
 
         public void Add(TCell cell)
         {
-            Cells.Add(cell.ColumnIndex, cell);
+            SortedCells.Add(cell.ColumnIndex, cell);
+
+            cell.Row = this;
         }
 
         public bool TryAdd(TCell cell)
         {
-            return Cells.TryAdd(cell.ColumnIndex, cell);
+            bool added = SortedCells.TryAdd(cell.ColumnIndex, cell);
+
+            if (added) cell.Row = this;
+
+            return added;
         }
     }
 }
