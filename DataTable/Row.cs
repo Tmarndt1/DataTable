@@ -7,7 +7,7 @@ namespace DataTable
 {
     public abstract class Row
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Uuid { get; set; } = Guid.NewGuid();
 
         [JsonPropertyName("index")]
         [XmlElement("index")]
