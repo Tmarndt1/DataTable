@@ -1,3 +1,7 @@
+using System.Text.Json;
+using System.Xml.Serialization;
+using System.Xml;
+
 namespace DataTable.Test
 {
     public class Cell2 : Cell
@@ -10,8 +14,10 @@ namespace DataTable.Test
         [Fact]
         public void RowTest()
         {
+            // Arrange
             Table<Cell2> table = new Table<Cell2>();
 
+            // Act
             table.Add(new Cell2()
             {
                 ColumnIndex = 1,
@@ -26,6 +32,7 @@ namespace DataTable.Test
                 Value = "TEST1"
             });
 
+            // Assert
             Assert.Equal("TEST1", table[1, 1].Value);
             Assert.Equal("TEST2", table[1, 2].Value);
         }
@@ -33,8 +40,10 @@ namespace DataTable.Test
         [Fact]
         public void ColumnTest()
         {
+            // Arrange
             Table<Cell2> table = new Table<Cell2>();
 
+            // Act
             table.Add(new Cell2()
             {
                 ColumnIndex = 2,
@@ -56,8 +65,10 @@ namespace DataTable.Test
         [Fact]
         public void MultipleTest()
         {
+            // Arrange
             Table<Cell2> table = new Table<Cell2>();
 
+            // Act
             table.Add(new Cell2()
             {
                 ColumnIndex = 2,
@@ -83,16 +94,17 @@ namespace DataTable.Test
             {
                 ColumnIndex = 1,
                 RowIndex = 2,
-                Value = "TEST1"
+                Value = "4"
             });
 
-
+            // Assert
             Assert.Equal(4, table.Count);
         }
 
         [Fact]
         public void RemoveTest()
         {
+            // Arrange
             Table<Cell2> table = new Table<Cell2>();
 
             Cell2 cell = new Cell2()
@@ -118,11 +130,94 @@ namespace DataTable.Test
                 Value = "3"
             });
 
-            Assert.Equal(3, table.Count);
-
+            // Act
             table.Remove(cell);
 
+            // Assert
             Assert.Equal(2, table.Count);
+        }
+
+        [Fact]
+        public void SerializeTest()
+        {
+            // Arrange
+            Table<Cell2> table = new Table<Cell2>();
+
+            table.Add(new Cell2()
+            {
+                ColumnIndex = 2,
+                RowIndex = 1,
+                Value = "1"
+            });
+
+            table.Add(new Cell2()
+            {
+                ColumnIndex = 1,
+                RowIndex = 1,
+                Value = "2"
+            });
+
+            table.Add(new Cell2()
+            {
+                ColumnIndex = 2,
+                RowIndex = 2,
+                Value = "3"
+            });
+
+            table.Add(new Cell2()
+            {
+                ColumnIndex = 1,
+                RowIndex = 2,
+                Value = "4"
+            });
+
+            // Act
+            string json = JsonSerializer.Serialize(table);
+
+            Assert.Equal("{\"columns\":[{\"cells\":[{\"Value\":\"2\",\"columnIndex\":1,\"rowIndex\":1},{\"Value\":\"4\",\"columnIndex\":1,\"rowIndex\":2}],\"index\":1},{\"cells\":[{\"Value\":\"1\",\"columnIndex\":2,\"rowIndex\":1},{\"Value\":\"3\",\"columnIndex\":2,\"rowIndex\":2}],\"index\":2}],\"rows\":[{\"cells\":[{\"Value\":\"2\",\"columnIndex\":1,\"rowIndex\":1},{\"Value\":\"1\",\"columnIndex\":2,\"rowIndex\":1}],\"index\":1},{\"cells\":[{\"Value\":\"4\",\"columnIndex\":1,\"rowIndex\":2},{\"Value\":\"3\",\"columnIndex\":2,\"rowIndex\":2}],\"index\":2}]}", json);
+        }
+
+        [Fact]
+        public void DeserializeTest()
+        {
+            // Arrange
+            Table<Cell2> table = new Table<Cell2>();
+
+            table.Add(new Cell2()
+            {
+                ColumnIndex = 2,
+                RowIndex = 1,
+                Value = "1"
+            });
+
+            table.Add(new Cell2()
+            {
+                ColumnIndex = 1,
+                RowIndex = 1,
+                Value = "2"
+            });
+
+            table.Add(new Cell2()
+            {
+                ColumnIndex = 2,
+                RowIndex = 2,
+                Value = "3"
+            });
+
+            table.Add(new Cell2()
+            {
+                ColumnIndex = 1,
+                RowIndex = 2,
+                Value = "4"
+            });
+
+            string json = JsonSerializer.Serialize(table);
+
+            // Act
+            Table<Cell2>? deserialed = JsonSerializer.Deserialize<Table<Cell2>>(json);
+
+            // Assert
+            Assert.Equal(4, deserialed?.Count);
         }
     }
 }

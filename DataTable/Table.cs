@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
+using System.Xml.Serialization;
 
 namespace DataTable
 {
@@ -8,6 +11,7 @@ namespace DataTable
     /// A generic table data structure with api to add new cells.
     /// </summary>
     /// <typeparam name="TCell">The generic cell type.</typeparam>
+    [XmlRoot]
     public class Table<TCell>
         where TCell : Cell
     {
@@ -18,17 +22,54 @@ namespace DataTable
         /// <summary>
         /// A sorted collection of table columns.
         /// </summary>
-        public IEnumerable<Column<TCell>> Columns => _columns.Values;
+        [JsonPropertyName("columns")]
+        [XmlElement]
+        public IEnumerable<Column<TCell>> Columns
+        {
+            get
+            {
+                return _columns.Values;
+            }
+            set
+            {
+                _columns.Clear();
+
+                foreach (var item in value)
+                {
+                    _columns.Add(item.Index, item);
+                }
+            }
+        }
 
         /// <summary>
         /// A sorted collection of table rows.
         /// </summary>
-        public IEnumerable<Row<TCell>> Rows => _rows.Values;
+        [JsonPropertyName("rows")]
+        [XmlElement]
+        public IEnumerable<Row<TCell>> Rows
+        {
+            get
+            {
+                return _rows.Values;
+            }
+            set
+            {
+                _rows.Clear();
+
+                foreach (var item in value)
+                {
+                    _rows.Add(item.Index, item);
+                }
+            }
+        }
+
 
         /// <summary>
         /// The amount of cells in the table.
         /// </summary>
-        public int Count { get; private set; }
+        [JsonIgnore]
+        [XmlIgnore]
+        public int Count => _columns.Values.Select(x => x.Count).Sum();
 
         /// <summary>
         /// Indexer that returns a cell based on the column index and row index.
@@ -62,8 +103,6 @@ namespace DataTable
             {
                 _rows.Add(cell.RowIndex, new Row<TCell>(cell));
             }
-
-            Count++;
         }
 
         public bool TryAdd(TCell cell)
@@ -82,8 +121,6 @@ namespace DataTable
             _columns.Remove(cell.RowIndex);
 
             _rows.Remove(cell.ColumnIndex);
-
-            Count--;
         }
 
         public void Clear()
@@ -91,8 +128,6 @@ namespace DataTable
             _columns.Clear(); 
 
             _rows.Clear();
-
-            Count = 0;
         }
     }
 }

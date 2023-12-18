@@ -1,23 +1,46 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using System.Xml.Serialization;
 
 namespace DataTable
 {
     public abstract class Row
     {
+        [JsonPropertyName("index")]
+        [XmlElement("index")]
         public int Index { get; init; }
     }
 
     public class Row<TCell> : Row
         where TCell : Cell
     {
+        [JsonIgnore]
+        [XmlIgnore]
         internal SortedList<int, TCell> SortedCells { get; private set; } = new SortedList<int, TCell>();
 
-        public IEnumerable<TCell> Cells => SortedCells.Values;
-
-        public TCell this[int index]
+        [JsonPropertyName("cells")]
+        [XmlElement("cells")]
+        public IEnumerable<TCell> Cells
         {
-            get => SortedCells[index];
+            get
+            {
+                return SortedCells.Values;
+            }
+            set
+            {
+                SortedCells.Clear();
+
+                foreach (var item in value)
+                {
+                    SortedCells.Add(item.ColumnIndex, item);
+                }
+            }
         }
+
+        [JsonIgnore]
+        public int Count => SortedCells.Count;
+
+        public TCell this[int index] => SortedCells[index];
 
         public Row() { }
 
