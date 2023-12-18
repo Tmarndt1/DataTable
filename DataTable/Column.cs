@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 
@@ -6,6 +7,8 @@ namespace DataTable
 {
     public abstract class Column 
     {
+        public Guid Id { get; set; } = Guid.NewGuid();
+
         [JsonPropertyName("index")]
         [XmlElement("index")]
         public int Index { get; init; }

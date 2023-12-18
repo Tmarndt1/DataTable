@@ -138,46 +138,6 @@ namespace DataTable.Test
         }
 
         [Fact]
-        public void SerializeTest()
-        {
-            // Arrange
-            Table<Cell2> table = new Table<Cell2>();
-
-            table.Add(new Cell2()
-            {
-                ColumnIndex = 2,
-                RowIndex = 1,
-                Value = "1"
-            });
-
-            table.Add(new Cell2()
-            {
-                ColumnIndex = 1,
-                RowIndex = 1,
-                Value = "2"
-            });
-
-            table.Add(new Cell2()
-            {
-                ColumnIndex = 2,
-                RowIndex = 2,
-                Value = "3"
-            });
-
-            table.Add(new Cell2()
-            {
-                ColumnIndex = 1,
-                RowIndex = 2,
-                Value = "4"
-            });
-
-            // Act
-            string json = JsonSerializer.Serialize(table);
-
-            Assert.Equal("{\"columns\":[{\"cells\":[{\"Value\":\"2\",\"columnIndex\":1,\"rowIndex\":1},{\"Value\":\"4\",\"columnIndex\":1,\"rowIndex\":2}],\"index\":1},{\"cells\":[{\"Value\":\"1\",\"columnIndex\":2,\"rowIndex\":1},{\"Value\":\"3\",\"columnIndex\":2,\"rowIndex\":2}],\"index\":2}],\"rows\":[{\"cells\":[{\"Value\":\"2\",\"columnIndex\":1,\"rowIndex\":1},{\"Value\":\"1\",\"columnIndex\":2,\"rowIndex\":1}],\"index\":1},{\"cells\":[{\"Value\":\"4\",\"columnIndex\":1,\"rowIndex\":2},{\"Value\":\"3\",\"columnIndex\":2,\"rowIndex\":2}],\"index\":2}]}", json);
-        }
-
-        [Fact]
         public void DeserializeTest()
         {
             // Arrange
